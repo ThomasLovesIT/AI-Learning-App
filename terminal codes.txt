@@ -1,0 +1,55 @@
+frontend > npm create vite @latest
+
+frontend >  npm install tailwindcss @tailwindcss/vite
+frontend >  npm install axios lucide-react moment react-hot-toast react-markdown react-router-dom react-syntax-highlighter remark-gfm
+
+
+backend > npm init -y
+backend >npm install bcryptjs cors dotenv express express-validator jsonwebtoken mongoose multer pdf-parse @google/genai
+backend >npm install nodemon --save-dev
+
+
+
+1st step -> create the folder structure in the backend
+2nd step -> backend setup and create the server.js
+3rd -> defining app routes
+4th -> database connection
+5th -> model (quiz,doucment,user) creation
+
+
+
+
+import User from './config/User.js'; // FIX: Closed quote and added .js
+import bcrypt from 'bcryptjs;
+import jwt from 'jsonwebtoken'
+
+const createToken =  (id) => {
+    return jwt.sign({id}, process.env.JWT_SECRET, {
+        expiresIn: '7d'
+    })
+}
+
+
+import jwt  from 'jsonwebtoken'
+import User from '../models/User.js';
+
+
+const Protect = async (req,res,next) => {
+    const {authorization} = req.headers.authorization
+
+    if(!authorization){
+        return res.status(500).json({message: 'You must log in first'})
+    }
+
+    try{
+        const token = authorization.split(' ')[1];
+
+    } catch(err){
+        res.status(401).json({message:'Unauthroized '})
+    }
+
+      
+
+}
+
+export default Protect
