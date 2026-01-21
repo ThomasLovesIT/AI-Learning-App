@@ -30,26 +30,35 @@ const createToken =  (id) => {
 }
 
 
-import jwt  from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+const protect = async (req, res, next) => { // Standard naming: lowercase function
+    let token;
 
-const Protect = async (req,res,next) => {
-    const {authorization} = req.headers.authorization
+    // 1. Check if the header exists AND starts with 'Bearer'
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            // 2. Get the token from the string "Bearer <token>"
+            token = req.headers.authorization.split(' ')[1];
 
-    if(!authorization){
-        return res.status(500).json({message: 'You must log in first'})
+            // ... verification logic comes next ...
+            const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+            req.user = await User.findById(decoded.id).select('-password')
+        
+            next()
+        } catch (error) {
+            console.error(error);
+            // 401 means "You failed to provide valid credentials"
+            return res.status(401).json({ message: 'Not authorized, token failed' });
+        }
     }
 
-    try{
-        const token = authorization.split(' ')[1];
-
-    } catch(err){
-        res.status(401).json({message:'Unauthroized '})
+    // 3. Handle case where no token was found
+    if (!token) {
+        return res.status(401).json({ message: 'Not authorized, no token' });
     }
+};
 
-      
-
-}
-
-export default Protect
+export default protect;

@@ -76,11 +76,49 @@ export async function register(req, res, next) {
 // ============================
 export async function login(req, res, next) {
   try {
-    res.status(501).json({ message: 'Login not implemented yet' })
-  } catch (err) {
-    next(err)
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please fill out all fields' });
+    }
+
+    const user = await User.findOne({ email }).select('+password');
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password,user.password)
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          createdAt: user.createdAt,
+        },
+        token,
+        message: 'Success login'
+      },
+    });
+
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).json({
+      error: error.message
+    })
+ 
   }
 }
+
 
 // ============================
 // GET PROFILE
