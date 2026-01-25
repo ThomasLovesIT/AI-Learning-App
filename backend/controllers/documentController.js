@@ -34,9 +34,11 @@ export const uploadDocument = async (req, res, next) => {
 
         //process pdf in backround and uses a queue in production
         processPDF(document._id, req.file.path).catch(err => {
-                console.err('PDF proccessing error', err)
+              console.error('PDF processing error', err)
+
         })
-        res.status(201),json({
+
+        res.status(201).json({
             success:true,
             message:'PDF uploaded successfully, process in progress'
         })
@@ -59,7 +61,7 @@ const processPDF = async (documentId,filePath) => {
         //create chunk
         const chunks = chunkText(text,500,50)
 
-        await Document.findByIdAndUpdate(docuemntId, {
+        await Document.findByIdAndUpdate(documentId, {
             extractedText: text,
             chunks: chunks,
             status: 'ready'
