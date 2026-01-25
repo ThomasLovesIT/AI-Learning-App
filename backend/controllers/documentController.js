@@ -1,6 +1,6 @@
 import Document from '../models/Document.js'
 import Quiz from '../models/Quiz.js'
-import Flashcard from '../models/Flashcard.js'
+import Flashcard from '../models/Flashcards.js'
 import {extractTextFromPDF} from '../utils/pdfParser.js'
 import  {chunkText} from '../utils/textChunker.js'
 import fs from 'fs/promises'
@@ -11,7 +11,11 @@ export const uploadDocument = async (req, res, next) => {
     try{
     
         if(!req.file){
-            return res.status(400).json({message: 'Upload a pdf'})
+            return res.status(400).json({
+              success: false,
+              message: 'Please upload a pdf',
+              statusCode: 400
+            })
          }
 
 
