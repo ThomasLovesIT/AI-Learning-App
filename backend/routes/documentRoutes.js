@@ -16,7 +16,7 @@ const router = express.Router()
 
 //all routes are protected and requires auth
 router.use(protect)
-router.post('/', uploadDocument )
+router.post('/', upload.single('file'), uploadDocument)
 router.get('/', getDocuments )
 router.get('/id', getDocument )
 router.put('/:id', updateDocument )

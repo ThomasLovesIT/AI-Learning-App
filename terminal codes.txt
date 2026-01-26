@@ -19,46 +19,4 @@ backend >npm install nodemon --save-dev
 
 
 
-import User from './config/User.js'; // FIX: Closed quote and added .js
-import bcrypt from 'bcryptjs;
-import jwt from 'jsonwebtoken'
-
-const createToken =  (id) => {
-    return jwt.sign({id}, process.env.JWT_SECRET, {
-        expiresIn: '7d'
-    })
-}
-
-
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
-
-const protect = async (req, res, next) => { // Standard naming: lowercase function
-    let token;
-
-    // 1. Check if the header exists AND starts with 'Bearer'
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            // 2. Get the token from the string "Bearer <token>"
-            token = req.headers.authorization.split(' ')[1];
-
-            // ... verification logic comes next ...
-            const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-            req.user = await User.findById(decoded.id).select('-password')
-        
-            next()
-        } catch (error) {
-            console.error(error);
-            // 401 means "You failed to provide valid credentials"
-            return res.status(401).json({ message: 'Not authorized, token failed' });
-        }
-    }
-
-    // 3. Handle case where no token was found
-    if (!token) {
-        return res.status(401).json({ message: 'Not authorized, no token' });
-    }
-};
-
-export default protect;
+docker run --env-file .env -p 5000:5000 --add-host=host.docker.internal:host-gateway my-backend-app

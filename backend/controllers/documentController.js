@@ -4,7 +4,7 @@ import Flashcard from '../models/Flashcards.js'
 import {extractTextFromPDF} from '../utils/pdfParser.js'
 import  {chunkText} from '../utils/textChunker.js'
 import fs from 'fs/promises'
-import mogoose from 'mongoose'
+import mongoose from 'mongoose'
 
 
 export const uploadDocument = async (req, res, next) => {
@@ -17,7 +17,6 @@ export const uploadDocument = async (req, res, next) => {
               statusCode: 400
             })
          }
-
 
         const {title} = req.body
         if(!title){
@@ -33,7 +32,9 @@ export const uploadDocument = async (req, res, next) => {
             fileName: req.file.originalname,
             filePath: fileUrL,
             fileSize: req.file.size,
-            status: 'processing'
+            status: 'processing',
+            lastAccessed: Date.now(),
+            uploadDate: Date.now()
         });
 
         //process pdf in backround and uses a queue in production
@@ -43,8 +44,7 @@ export const uploadDocument = async (req, res, next) => {
         })
 
         res.status(201).json({
-            success:true,
-            message:'PDF uploaded successfully, process in progress'
+           data: document
         })
 
     }catch(error){
@@ -52,6 +52,10 @@ export const uploadDocument = async (req, res, next) => {
             await fs.unlink(req.file.path).catch(() => {})
         }
         next(error)
+        res.status(400).json({
+          message: error.message,
+          statusCode: 400
+        })
     } 
 }
 
@@ -143,7 +147,37 @@ export const getDocuments = async (req, res, next) => {
 export const getDocument = async (req, res, next) => {
 
     try{
+      const document = await Document.findOne({
+        _id: req.params.id,
+        userId: req.user._id
 
+      })
+
+      if(!document){
+        return res.status(404).json({
+          message: 'Document does not exist',
+          statusCode: 404
+        })
+      }
+
+      //Get total counts of the associated flashcards and quizzes
+      const flashcardCount = await Flashcard.countDocuments({documentId: document._id, userId: req.user._id})
+      const quizCount = await Quiz.countDocuments({documentId: document._id, userId: req.user._id})
+
+
+      //update last accessed
+      document.lastAccessed = Date.now()
+      await document.save()
+
+      //combine documents data with counts
+      const documentData = document.toObject()
+      documentData.flashcardCount = flashcardCount
+      documentData.quizCount = quizCount
+
+      res.status(200).json({
+        success:true,
+        data: documentData
+      })
     }catch(error){
 
     }

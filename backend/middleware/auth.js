@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
                 return res.status(401).json({
                     success: false,
                     error: 'User not found',
-                    statusCide: 401
+                    statusCode: 401
                 })
             }
               next()
@@ -40,7 +40,7 @@ const protect = async (req, res, next) => {
         return res.status(401).json({
                     success: false,
                     error: 'No Token',
-                    statusCide: 401
+                    statusCode: 401
                 });
     }
 }
