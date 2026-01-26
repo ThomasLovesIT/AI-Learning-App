@@ -147,39 +147,48 @@ export const getDocuments = async (req, res, next) => {
 export const getDocument = async (req, res, next) => {
 
     try{
+      //create a variable and find the document using .findOne
       const document = await Document.findOne({
         _id: req.params.id,
         userId: req.user._id
+      });
 
+      //validation
+     if(!document){
+      return res.status(404).json({
+        message: 'Document does not exist',
+        statusCode: 404
       })
+     }
 
-      if(!document){
-        return res.status(404).json({
-          message: 'Document does not exist',
-          statusCode: 404
-        })
-      }
-
-      //Get total counts of the associated flashcards and quizzes
-      const flashcardCount = await Flashcard.countDocuments({documentId: document._id, userId: req.user._id})
-      const quizCount = await Quiz.countDocuments({documentId: document._id, userId: req.user._id})
+      //Get total counts of the associated flashcards and quizzes with .countDocuments
+     const [flashcardCount, quizCount] = await Promise.all([
+            Flashcard.countDocuments({ documentId: document._id, userId: req.user._id }),
+            Quiz.countDocuments({ documentId: document._id, userId: req.user._id })
+        ]);
 
 
-      //update last accessed
-      document.lastAccessed = Date.now()
-      await document.save()
 
-      //combine documents data with counts
-      const documentData = document.toObject()
-      documentData.flashcardCount = flashcardCount
-      documentData.quizCount = quizCount
+         // 4. UPDATE: Update timestamp
+        document.lastAccessed = Date.now();
+        await document.save();
 
-      res.status(200).json({
+        // 5. MERGE: Convert to plain JS object to append custom fields
+        const documentData = document.toObject();
+        documentData.flashcardCount = flashcardCount;
+        documentData.quizCount = quizCount;
+
+      //display a success message
+        res.status(200).json({
         success:true,
         data: documentData
-      })
+        })
     }catch(error){
-
+     res.status(500).json({
+        message:error.message||error
+      })
+    
+     
     }
 }
 
