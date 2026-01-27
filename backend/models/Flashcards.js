@@ -13,7 +13,7 @@ const flashcardSchema = new mongoose.Schema({
     },
     cards: [
         {
-            queston: {type: String, Required: true},
+            question: {type: String, Required: true},
             answer: {type: String, Required: true},
             difficulty: {type: String, enum: ['easy', 'medium','hard'], default: 'medium'},
             lastReviewed: {type: Date, Required: true},
