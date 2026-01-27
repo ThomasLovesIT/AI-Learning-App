@@ -78,7 +78,7 @@ const processPDF = async (documentId,filePath) => {
         console.log(`Document ${documentId} is ready`)
     }catch(err){
         console.log(err || err.message);
-         await Document.findByIdAndUpdate(docuemntId, {
+         await Document.findByIdAndUpdate(documentId, {
             status: 'failed'
         })
 
@@ -188,25 +188,40 @@ export const getDocument = async (req, res, next) => {
         message:error.message||error
       })
     
+      document.title = title;
+      await document.save()
      
     }
 }
 
-export const updateDocument = async (req, res, next) => {
-
-    try{
-
-    }catch(error){
-
-    }
-}
-
 export const deleteDocument = async (req, res, next) => {
-
     try{
+      //fetch the data document id from the model
+      const document = await Document.findOne({
+        _id: req.params.id,
+        userId: req.user._id
+      });
+      // condition if the id does not exist
+      if(!document){
+        return res.status(400).json({message: 'Document does not exist'})
+      } 
 
+      //unlink file from the file system
+      await fs.unlink(document.filePath).catch(() => {});
+
+      //delete document
+      await document.deleteOne()
+    
+
+      res.status(200).json({
+        message:'Document deleted successfully',
+        success: true
+      })
     }catch(error){
-
+ res.status(500).json({
+        message:'Internal server error',
+       error: error.message
+      })
     }
 }
 
