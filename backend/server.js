@@ -10,6 +10,7 @@ import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import documentRoutes from './routes/documentRoutes.js'
 import flashcardRoutes from './routes/flashcardRoutes.js'
+import aiRoutes from './routes/aiRoutes.js'
 
 //ES_6 module dirname alternative
 const __filename = fileURLToPath(import.meta.url)
@@ -42,6 +43,7 @@ app.use('/uploads', express.static(path.join(__dirname,'uploads')))
 app.use('/api/auth', authRoutes)
 app.use('/api/document', documentRoutes)
 app.use('/api/flashcard', flashcardRoutes)
+app.use('/api/aiRoutes', aiRoutes)
 
 // 404 Handler
 app.use((req,res)=> {
