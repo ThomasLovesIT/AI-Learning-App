@@ -210,7 +210,7 @@ export const deleteDocument = async (req, res, next) => {
       await fs.unlink(document.filePath).catch(() => {});
 
       //delete document
-      await document.deleteOne()
+     await document.deleteOne()
     
 
       res.status(200).json({
