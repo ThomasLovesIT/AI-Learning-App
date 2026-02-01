@@ -78,10 +78,14 @@ export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
 
+
+    // validation
     if (!email || !password) {
       return res.status(400).json({ message: 'Please fill out all fields' });
     }
 
+
+    //find the user by email 
     const user = await User.findOne({ email }).select('+password');
     
     if (!user) {
