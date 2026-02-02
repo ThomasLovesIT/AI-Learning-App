@@ -43,7 +43,7 @@ app.use('/uploads', express.static(path.join(__dirname,'uploads')))
 app.use('/api/auth', authRoutes)
 app.use('/api/document', documentRoutes)
 app.use('/api/flashcard', flashcardRoutes)
-app.use('/api/aiRoutes', aiRoutes)
+app.use('/api/ai', aiRoutes)
 
 // 404 Handler
 app.use((req,res)=> {
