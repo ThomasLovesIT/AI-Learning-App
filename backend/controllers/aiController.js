@@ -1,9 +1,9 @@
- import Document from '../models/Document'
- import Flashcard from '../models/Flashcards'
- import Quiz from '../models/Quiz'
- import ChatHistory from '../models/ChatHistory'
- import * as geminiService from '../utiles/geminiService'
- import { findRelevantChunks } from '../utils/textChunker'
+ import Document from '../models/Document.js'
+ import Flashcard from '../models/Flashcards.js'
+ import Quiz from '../models/Quiz.js'
+ import ChatHistory from '../models/ChatHistory.js'
+ import * as geminiService from '../utils/geminiService.js'
+ import { findRelevantChunks } from '../utils/textChunker.js'
 
  
  

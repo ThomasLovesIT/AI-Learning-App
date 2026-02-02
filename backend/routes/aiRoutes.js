@@ -1,4 +1,5 @@
 import express from 'express'
+import protect from '../middleware/auth.js'
 import {
     generateFlashcards,
     generateQuiz,
@@ -6,7 +7,7 @@ import {
     chat,
     explainConcept,
     getChatHistory
-}from '../controllers/aiController'
+}from '../controllers/aiController.js'
 
 const router = express.Router()
 

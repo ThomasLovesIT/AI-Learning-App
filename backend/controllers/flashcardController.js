@@ -79,7 +79,7 @@ export const reviewFlashcard = async (req, res, next) => {
   }
 };
 
-export const toggleStarFlashcard = async (req, res, next) => {
+export const toggleStartFlashcard = async (req, res, next) => {
   try {
     const flashcardSet = await Flashcard.findOne({
       'cards._id': req.params.cardId,
