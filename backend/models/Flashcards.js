@@ -16,7 +16,7 @@ const flashcardSchema = new mongoose.Schema({
             question: {type: String, Required: true},
             answer: {type: String, Required: true},
             difficulty: {type: String, enum: ['easy', 'medium','hard'], default: 'medium'},
-            lastReviewed: {type: Date, Required: true},
+            lastReviewed: {type: Date, default: null},
             reviewCount: {type: Number, default: 0},
             isStarred: {type: Boolean, default: false }
         }
@@ -26,7 +26,7 @@ const flashcardSchema = new mongoose.Schema({
 }
 )
 //faster query
-flashcardSchema.index({userId: 1, documenId: 1})
+flashcardSchema.index({userId: 1, documentId: 1})
 
 const Flashcard = mongoose.model('Flashcard', flashcardSchema )
 
