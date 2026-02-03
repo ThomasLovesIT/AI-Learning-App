@@ -103,55 +103,56 @@ Separate questions with "---"
 Text:
 ${text.substring(0, 15000)}`;
 
-try{
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
-      contents: prompt,
-    });
-    const generatedText = response.text;
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-lite',
+    contents: prompt,
+  });
 
-    const questions = []
-    const questionBlocks = generatedText.split('---').filter( q => q.trim())
+  const generatedText = response.text;
 
-    for (const block of questionBlocks) {
-  const lines = block.trim().split("\n");
-  let question = "", options = [], correctAnswer = "", explanation = "", difficulty = "medium";
+  const questions = [];
+  const questionBlocks = generatedText.split('---').filter(q => q.trim());
 
-  for (const line of lines) {
-    const trimmed = line.trim();
+  for (const block of questionBlocks) {
+    const lines = block.trim().split("\n");
 
-    if (trimmed.startsWith("Q:")) {
-      question = trimmed.substring(2).trim();
-    } 
-    else if (trimmed.match(/^[0-9]\./)) {
-      options.push(trimmed.substring(3).trim());
-    } 
-    else if (trimmed.startsWith("C:")) {
-      correctAnswer = trimmed.substring(2).trim();
-    } 
-    else if (trimmed.startsWith("E:")) {
-      explanation = trimmed.substring(2).trim();
-    } 
-    else if (trimmed.startsWith("D:")) {
-      const diff = trimmed.substring(2).trim().toLowerCase();
-      if (["easy", "medium", "hard"].includes(diff)) {
-        difficulty = diff;
+    let question = "";
+    let options = [];
+    let correctAnswer = "";
+    let explanation = "";
+    let difficulty = "medium";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith("Q:")) {
+        question = trimmed.substring(2).trim();
+      } 
+      else if (trimmed.match(/^O[1-4]:/)) { // ✅ FIX
+        options.push(trimmed.substring(3).trim());
+      } 
+      else if (trimmed.startsWith("C:")) {
+        correctAnswer = trimmed.substring(2).trim();
+      } 
+      else if (trimmed.startsWith("E:")) {
+        explanation = trimmed.substring(2).trim();
+      } 
+      else if (trimmed.startsWith("D:")) {
+        const diff = trimmed.substring(2).trim().toLowerCase();
+        if (["easy", "medium", "hard"].includes(diff)) {
+          difficulty = diff;
+        }
       }
+    }
+
+    if (question && options.length === 4 && correctAnswer) {
+      questions.push({ question, options, correctAnswer, explanation, difficulty });
     }
   }
 
-  if (question && options.length === 4 && correctAnswer) {
-    questions.push({ question, options, correctAnswer, explanation, difficulty });
-  }
-}
-
-return questions.slice(0, numQuestions)   
-
-}catch(err){
- console.error('Gemini API ERROR:', err);
-    throw new Error('Failed to generate flashcards');
-}
+  return questions; // ✅ FIX
 };
+
 
 
 /**
