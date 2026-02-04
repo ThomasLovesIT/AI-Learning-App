@@ -240,7 +240,7 @@ export const explainConcept = async (concept, question) => {
       });
 
       const generatedText = response.text
-      return genereatedText
+      return generatedText
   }catch(err){
       console.error('Internal server error' || err.message)
       throw new Error('Failed to expain concept')
