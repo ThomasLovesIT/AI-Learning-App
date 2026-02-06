@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 
 const chatHistorySchema = new mongoose.Schema ({
-       userID:{
+       userId:{
            type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             required: true

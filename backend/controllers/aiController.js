@@ -205,15 +205,15 @@ res.status(201).json({
     const chunkIndices = relevantChunks.map(c => c.chunkIndex);
 
     let chatHistory = await ChatHistory.findOne({
-      userId: rq.user._id,
-      documentd: document._id,
-      message: []
+      userId: req.user._id,
+      documentId: document._id,
     })
 
     if(!chatHistory) {
-      chatHistory = await chatHistory.create({
-              userId: rq.user._id,
-      documentd: document._id
+      chatHistory = await ChatHistory.create({
+              userId: req.user._id,
+              documentId: document._id,
+                messages: []
       })
     }
 
@@ -227,13 +227,13 @@ res.status(201).json({
       {
          role: 'user',
          content: question,
-         timestamp: newDate(),
+         timestamp: new Date(),
          relevantChunks: []
       },
       {
           role: 'assistant',
          content: answer,
-         timestamp: newDate(),
+         timestamp: new Date(),
          relevantChunks: chunkIndices
       }
     )
@@ -254,6 +254,7 @@ res.status(201).json({
 
     }catch(error){
         next(error)
+        res.status(500).json(error.message)
     }
  }
  export const explainConcept = async (req, res, next) => {

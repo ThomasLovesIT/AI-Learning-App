@@ -196,9 +196,11 @@ ${text}
  */
 
 export const chatWithContext = async (question, chunks) => {
-  const context = chunks.map((c, i) => `[Chunk ${i + 1}]\m$(c.content)`).join(`\n\n`)
+ const context = chunks
+    .map((c, i) => `[Chunk ${i + 1}]\n${c.content}`)
+    .join('\n\n')
 
-  console.log('context____', context)
+  console.log('context____', context.slice(0, 300))
 
   const prompt = `Based on the following context from a document, Analyze the context and answe the user's question. If the answer is on in the context then let the user know
   
