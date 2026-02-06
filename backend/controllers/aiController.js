@@ -128,9 +128,43 @@ export const generateQuiz = async (req, res, next) => {
 }
  export const generateSummary = async (req, res, next) => {
  try{
+   const { documentId } = req.body
+   if(!documentId){
+      return res.status(400).json({
+         success: false,
+         message: 'Please add a document Id',
+         statusCode: 400
+      })
+   }
+
+   const document = await Document.findOne({
+      _id: documentId,
+      userId: req.user._id,
+      status: 'ready'
+   })
+
+   if(!document){
+      return res.status(400).json({
+         success: false,
+         message: 'Document not found',
+         statusCode: 400
+      })
+   }
+
+   const generatedSummary = await geminiService(document.extractedText)
+   res.status(201).json({
+      success:true,
+      message: 'Summary successfully created',
+      data:{
+         documentId: documentId._id,
+         title: document.title,
+         summary
+      }
+   })
 
     }catch(error){
-        
+       console.error(error.message || error)
+       
     }
  }
  export const chat = async (req, res, next) => {
