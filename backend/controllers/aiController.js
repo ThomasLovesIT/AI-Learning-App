@@ -151,14 +151,17 @@ export const generateQuiz = async (req, res, next) => {
       })
    }
 
-   const generatedSummary = await geminiService(document.extractedText)
+   const generatedSummary = await geminiService.generateSummary(
+      document.extractedText
+   )
    res.status(201).json({
+
       success:true,
       message: 'Summary successfully created',
       data:{
          documentId: documentId._id,
          title: document.title,
-         summary
+         summary: generatedSummary
       }
    })
 
