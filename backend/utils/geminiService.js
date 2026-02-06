@@ -162,9 +162,14 @@ ${text.substring(0, 15000)}`;
  */
 
 export const generateSummary = async (text) => {
-  // variable called promp with ai instruction
-  const prompt = `Provide a concise summary of the following extracted text, highlight the key concepts, main ideas and important points
-  keep the summary clear and structured`
+const prompt = `
+Summarize the following text.
+Highlight key concepts, main ideas, and important points.
+Do not add introductions like "Here is the summary".
+
+TEXT:
+${text}
+`;
 
 
 
