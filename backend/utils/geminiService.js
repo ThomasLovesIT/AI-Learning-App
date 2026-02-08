@@ -171,8 +171,6 @@ TEXT:
 ${text}
 `;
 
-
-
     try{
         // store the ai resposne text
       const response = await ai.models.generateContent({
@@ -186,7 +184,6 @@ ${text}
   console.error('Gemini API ERROR:', err);
       throw new Error('Failed to generate flashcards');
   }
-
 }
 /**
  * Generate chat with context
@@ -196,6 +193,7 @@ ${text}
  */
 
 export const chatWithContext = async (question, chunks) => {
+
  const context = chunks
     .map((c, i) => `[Chunk ${i + 1}]\n${c.content}`)
     .join('\n\n')
@@ -210,9 +208,7 @@ export const chatWithContext = async (question, chunks) => {
   Question: ${question}
   
   Answer: `
-
-    try{
-        // store the ai resposne text
+try{
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-lite',
         contents: prompt,
@@ -224,32 +220,36 @@ export const chatWithContext = async (question, chunks) => {
   console.error('Gemini API ERROR:', err);
       throw new Error('Failed to generate flashcards');
   }
-
 }
-
 /**
- * Generate Explain concept from ai
+ * Generate Explain concept from AI
  * @param {string} concept
- * @param {string} question
- * @returns {Promise<Array>}
+ * @param {string} context
+ * @returns {Promise<string>}
  */
-export const explainConcept = async (concept, question) => {
-  const prompt = `Explain the concept of "${concept}" based on the following context,
-  provide a clear, educational explanation that's easy to understand. Include examples if relevant
-  
-  Context: 
-  ${context.substring(0,10000)}`
+export const explainConcept = async (concept, context) => {
 
-  try{  
-     const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
-        contents: prompt,
-      });
 
-      const generatedText = response.text
-      return generatedText
-  }catch(err){
-      console.error('Internal server error' || err.message)
-      throw new Error('Failed to expain concept')
+  const prompt = `
+Explain the concept of "${concept}" based on the following context.
+Provide a clear, educational explanation that's easy to understand.
+
+
+
+Context: ${context.substring(0,10000)}
+`;
+
+
+  try {  
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-lite',
+      contents: prompt,
+    });
+
+    return response.text;
+
+  } catch (err) {
+    console.error('Internal server error:', err.message);
+    throw new Error('Failed to explain concept');
   }
-}
+};

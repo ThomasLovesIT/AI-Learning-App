@@ -128,50 +128,35 @@ export const generateQuiz = async (req, res, next) => {
 }
  export const generateSummary = async (req, res, next) => {
 try{
-      const {documentId} = req.body
-      // validation if document Id not found
-      if(!documentId){
-         return res.status(400).json({
-            success: false,
-            message: 'Please select a document',
-            statusCode: 400
-         })
-      }
-
-      //find the document that belongs to the user with a status of ready
-      const document = await Document.findOne({
-         _id: documentId,
-         userId: req.user._id,
-         status: 'ready'
+     
+   const {documentId} = req.body
+   if(!documentId){
+      return res.status(400).json({
+         success: false,
+         message: 'Internal Server Error',
+         statusCode: 400
       })
-
-      // validation if document no found
-      if (!document) {
-         return res.status(400).json({
-            success: false,
-            message: 'Document not found',
-            statusCode: 400
-         })
-      }
-
-      const summary = await geminiService.generateSummary(
-         document.extractedText
-      )
-
-res.status(201).json({
+   }
+   const document = await Document.findOne({
+      _id: documentId,
+      userId: req.user._id,
+      status:'ready'
+   })
+   const summary = await geminiService.generateSummary(
+      document.extractedText
+   )
+   res.status(201).json({
       success:true,
-      message: 'Summary successfully created',
-      data:{
-         documentId: document._id,
+      data: {
+         documentId: documentId,
          title: document.title,
-         summary: summary
+         summary
       }
    })
-
-
       
 }catch(error){
    next(error)
+   res.status(500).json({message: 'Internal server error'})
 }
  }
  export const chat = async (req, res, next) => {
@@ -200,7 +185,6 @@ res.status(201).json({
    }
    
     //find relavant chunks
-
     const relevantChunks = findRelevantChunks(document.chunks, question, 3);
     const chunkIndices = relevantChunks.map(c => c.chunkIndex);
 
@@ -209,6 +193,7 @@ res.status(201).json({
       documentId: document._id,
     })
 
+   // create the chat history if not exist yet
     if(!chatHistory) {
       chatHistory = await ChatHistory.create({
               userId: req.user._id,
@@ -216,13 +201,13 @@ res.status(201).json({
                 messages: []
       })
     }
-
+    // gemini answer generated
     const answer = await geminiService.chatWithContext(
       question,
       relevantChunks
     )
 
-
+    //store the messages inside the chat history
     chatHistory.messages.push(
       {
          role: 'user',
@@ -238,12 +223,15 @@ res.status(201).json({
       }
     )
 
+    //Save the changes
     await chatHistory.save()
 
 
      res.status(201).json({
       success:true,
       data:{
+         documentId,
+         title: document.title,
         question,
         answer,
         relevantchunks: relevantChunks,
@@ -254,18 +242,62 @@ res.status(201).json({
 
     }catch(error){
         next(error)
-        res.status(500).json(error.message)
+        res.status(500).json( error.message)
     }
  }
  export const explainConcept = async (req, res, next) => {
  try{
+      const {documentId, concept} = req.body          
+      
+      if(!documentId || !concept) {
+         return res.status(400).json({
+            success: false,
+            message: 'Please add a document or a topic',
+            statusCode: 400
+         })
+      }
+
+      const document = await Document.findOne({
+         _id: documentId,
+         userId: req.user._id,
+         status: 'ready'
+      })
+
+      if (!document){
+          return res.status(400).json({
+            success: false,
+            message: 'Document not found',
+            statusCode: 400
+         })
+      }
+         //find relavant chunks
+         const relevantChunks = findRelevantChunks(document.chunks, concept, 10);
+         const context = relevantChunks.map(c => c.content).join('\n\n');
+
+      const conceptExplanation = await geminiService.explainConcept(
+        concept,
+        context 
+      )
+
+      res.status(201).json({
+         success:true,
+         data: {
+            concept,
+            conceptExplanation,
+            relevantChunks: relevantChunks.map(c => c.chunkIndex)
+         },
+         message:'Concept explanation generated successfully',
+      })
 
     }catch(error){
-        
+      next(error)
+        console.error(error.message)
     }
  }
  export const getChatHistory = async (req, res, next) => {
  try{
+      const {doci}
+
 
     }catch(error){
         
