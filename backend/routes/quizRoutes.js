@@ -10,10 +10,10 @@ import {getQuizzes,
 const router = express.Router()
 router.use(protect)
 
-router.get('/', getQuizzes) 
-router.get('/:id', getQuizById) 
-router.post('/', submitQuiz) 
+router.get('/:documentId', getQuizzes) 
+router.get('/quiz/:id', getQuizById) 
+router.post('/:id/submit', submitQuiz) 
 router.get('/:id/results', getQuizResults) 
-router.get('/', deleteQuiz) 
+router.get('/:id', deleteQuiz) 
 
 export default router
