@@ -33,9 +33,28 @@ import Quiz from '../models/Quiz.js'
 
  export const getQuizById = async (req, res, next) => {
     try{
+        const quiz = await Quiz.findOne({
+         _id: req.params.id,
+         userId: req.user._id
+        })
+        if(!quiz){
+            return res.status(400).json({
+                success:false,
+                message:'Quiz not found',
+                statusCode: 400
+            })
+        }
+        console.log(quiz)
 
+        res.status(200).json({
+            success:true,
+            message:'Quiz fetched by ID success',
+            data: quiz
+        })
+     
     }catch(err){
         next(err)
+
     }
  }
  export const submitQuiz = async (req, res, next) => {
@@ -47,7 +66,7 @@ import Quiz from '../models/Quiz.js'
  }
  export const getQuizResults = async (req, res, next) => {
     try{
-
+         
     }catch(err){
         next(err)
     }
