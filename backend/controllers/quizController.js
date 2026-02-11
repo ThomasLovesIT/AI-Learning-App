@@ -205,6 +205,31 @@ import Quiz from '../models/Quiz.js'
  }
  export const deleteQuiz = async (req, res, next) => {
     try{
+      // fetch quiz id
+      const quiz = await Quiz.findOne({
+        _id: req.params._id,
+        userId: req.user._id
+      });
+
+        if(!quiz){
+          return res.status(404).json({
+             success:false,
+                message:'Quiz not found',
+                statusCode: 404
+          })
+       }
+
+       //delete quiz
+         await quiz.deleteOne()
+
+
+
+
+          res.status(200).json({
+        success: true,
+        message: 'Quiz Deleted syccessfully',
+
+    });
 
     }catch(err){
         next(err)
