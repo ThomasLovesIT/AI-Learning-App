@@ -1,3 +1,14 @@
+/**
+ * API CONSTANTS & ROUTES
+ * 
+ * Purpose:
+ * This file acts as a central "address book" for all backend endpoints.
+ * Instead of hardcoding URLs (e.g., "http://localhost:8000/api/...") inside components,
+ * we import them from here. This makes refactoring easier if backend routes change.
+ */
+
+// The root URL of your backend server.
+// TODO: Change this to your production URL when deploying (e.g., https://myapp.com)
 export const BASE_URL = "http://localhost:8000";
 
 export const API_PATHS = {
