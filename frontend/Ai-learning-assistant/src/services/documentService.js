@@ -22,7 +22,7 @@ import { API_PATHS } from '../utils/apiPath.js'
 
 const getDocuments = async () => {
     try {
-    const response = await axiosInstance.post(API_PATHS.DOCUMENTS.GET_DOCUMENTS)
+    const response = await axiosInstance.get(API_PATHS.DOCUMENTS.GET_DOCUMENTS)
     return response.data
     }catch(err){
         throw err.response?.data || {message: 'Failed to fetch all documents'}
@@ -42,7 +42,7 @@ const uploadDocuments = async (formData) => {
 }
 const getDocumentById = async (id) => {
     try {
-    const response = await axiosInstance.post(API_PATHS.DOCUMENTS.GET_DOCUMENT_BY_ID(id))
+    const response = await axiosInstance.get(API_PATHS.DOCUMENTS.GET_DOCUMENT_BY_ID(id))
     return response.data
     }catch(err){
         throw err.response?.data || {message: 'Failed to fetch document detail'}
@@ -50,7 +50,7 @@ const getDocumentById = async (id) => {
 }
 const deleteDocument = async (id) => {
     try {
-    const response = await axiosInstance.post(API_PATHS.DOCUMENTS.DELETE_DOCUMENT(id))
+    const response = await axiosInstance.delete(API_PATHS.DOCUMENTS.DELETE_DOCUMENT(id))
     return response.data
     }catch(err){
         throw err.response?.data || {message: 'Failed to delete document'}
