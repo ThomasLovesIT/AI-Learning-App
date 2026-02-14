@@ -63,7 +63,7 @@ const documentService = {
    getDocuments,
    uploadDocuments,
    deleteDocument,
-    getDocumentById
+  getDocumentById
 }
 
 export default documentService
