@@ -36,9 +36,10 @@ const register = async (username,email, password) => {
         email,
         password
     })
-       
+      
     return response.data
     }catch(err){
+        console.log(err.message)
         throw err.response?.data || {message: 'An unknown error occured'}
     }
 }
