@@ -22,6 +22,7 @@ const login = async (email, password) => {
         email,
         password
     })
+      
     return response.data
     }catch(err){
         throw err.response?.data || {message: 'An unknown error occured'}
@@ -35,6 +36,7 @@ const register = async (username,email, password) => {
         email,
         password
     })
+       
     return response.data
     }catch(err){
         throw err.response?.data || {message: 'An unknown error occured'}

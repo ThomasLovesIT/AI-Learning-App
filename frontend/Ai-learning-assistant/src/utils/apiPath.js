@@ -9,7 +9,7 @@
 
 // The root URL of your backend server.
 // TODO: Change this to your production URL when deploying (e.g., https://myapp.com)
-export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "http://localhost:5000";
 
 export const API_PATHS = {
     AUTH: {

@@ -26,6 +26,7 @@ axiosInstance.interceptors.request.use(
         if(accessToken){
             config.headers.Authorization = `Bearer ${accessToken}`
         }
+        console.log({message:accessToken})
         return config
     },
     (error) =>{
@@ -41,9 +42,9 @@ axiosInstance.interceptors.response.use(
     (error) =>{
       if(error.response){
         if(error.response.status === 500) {
-            console.error("server error, Please try again later+")
+            console.error("server error, Please try again later")
         }
-      }else if (error.code === "ECONNABORATED") {
+      }else if (error.code === "ECONNABORTED") {
         console.error("Request timeout")
       }
       return Promise.reject(error)
