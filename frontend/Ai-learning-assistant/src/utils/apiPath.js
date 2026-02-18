@@ -22,10 +22,10 @@ export const API_PATHS = {
 
     DOCUMENTS: {
         // Based on your code: router.post('/', upload...)
-        UPLOAD: "/api/documents", 
-        GET_DOCUMENTS: "/api/documents",
-        GET_DOCUMENT_BY_ID: (id) => `/api/documents/${id}`,
-        DELETE_DOCUMENT: (id) => `/api/documents/${id}`,
+        UPLOAD: "/api/document", 
+        GET_DOCUMENTS: "/api/document",
+        GET_DOCUMENT_BY_ID: (id) => `/api/document/${id}`,
+        DELETE_DOCUMENT: (id) => `/api/document/${id}`,
     },
 
     AI: {
@@ -38,11 +38,11 @@ export const API_PATHS = {
     },
 
     FLASHCARDS: {
-        GET_ALL_SETS: "/api/flashcards",
-        GET_BY_DOCUMENT: (documentId) => `/api/flashcards/${documentId}`,
+        GET_ALL_SETS: "/api/flashcard",
+        GET_BY_DOCUMENT: (documentId) => `/api/flashcard/${documentId}`,
         REVIEW_CARD: (cardId) => `/api/flashcards/${cardId}/review`,
-        TOGGLE_STAR: (cardId) => `/api/flashcards/${cardId}/star`,
-        DELETE_SET: (id) => `/api/flashcards/${id}`,
+        TOGGLE_STAR: (cardId) => `/api/flashcard/${cardId}/star`,
+        DELETE_SET: (id) => `/api/flashcard/${id}`,
     },
 
     QUIZ: {

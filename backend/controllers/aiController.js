@@ -296,32 +296,27 @@ try{
  }
  export const getChatHistory = async (req, res, next) => {
  try{
-      const {documentId} = req.body
-      if(!documentId){
-         return res.status(400).json({
-            success:false,
-            message:'Please select an existing document',
-            statusCode: 400
-         })
-      }
+      const {documentId} = req.params
+      
       const chatArchive = await ChatHistory.findOne({
          userId: req.user._id,
          documentId: documentId
       }).select('messages')
 
-      if(!chatArchive){
-         return res.status(404).json({
-            success: false,
-            data: [],
-            message: 'Chat history not found'
-           
-
-         })
+      if (!chatArchive || chatArchive.messages.length === 0) {
+         return res.status(200).json({
+            success: true,
+            message: 'No chat history yet',
+            statusCode: 404,
+            data: []
+         }) 
       }
+
       res.status(200).json({
-         success:true,
-         data: chatArchive.messages
-      })
+         success: true,
+         data: chatArchive.messages,
+         message: 'Chat history retrieved successfully'
+      });
 
     }catch(error){
       next(error)

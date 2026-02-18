@@ -1,11 +1,16 @@
 import Document from '../models/Document.js'
 import Quiz from '../models/Quiz.js'
 import Flashcard from '../models/Flashcards.js'
-import {extractTextFromPDF} from '../utils/pdfParser.js'
-import  {chunkText} from '../utils/textChunker.js'
+import { extractTextFromPDF } from '../utils/pdfParser.js'
+import { chunkText } from '../utils/textChunker.js'
 import fs from 'fs/promises'
 import mongoose from 'mongoose'
+import path from 'path'                          // ✅ add this
+import { fileURLToPath } from 'url'   
 
+
+const __filename = fileURLToPath(import.meta.url) // ✅ add this
+const __dirname = path.dirname(__filename) 
 
 export const uploadDocument = async (req, res, next) => {
     try{
@@ -23,7 +28,7 @@ export const uploadDocument = async (req, res, next) => {
              await fs.unlink(req.file.path)
                return res.status(400).json({error: 'Provide a pdf title'})
         }
-        const baseUrl = `https://localhost:${process.env.PORT || 5000}`
+        const baseUrl = `http://localhost:${process.env.PORT || 5000}`
         const fileUrL = `${baseUrl}/uploads/documents/${req.file.filename}`;
 
         const document = await Document.create({
@@ -52,10 +57,6 @@ export const uploadDocument = async (req, res, next) => {
             await fs.unlink(req.file.path).catch(() => {})
         }
         next(error)
-        res.status(400).json({
-          message: error.message,
-          statusCode: 400
-        })
     } 
 }
 
@@ -187,10 +188,8 @@ export const getDocument = async (req, res, next) => {
      res.status(500).json({
         message:error.message||error
       })
-    
-      document.title = title;
-      await document.save()
-     
+  
+       
     }
 }
 
@@ -206,8 +205,9 @@ export const deleteDocument = async (req, res, next) => {
         return res.status(400).json({message: 'Document does not exist'})
       } 
 
-      //unlink file from the file system
-      await fs.unlink(document.filePath).catch(() => {});
+      const urlPath = new URL(document.filePath).pathname; // /uploads/documents/file.pdf
+      const localPath = path.join(__dirname, '..', urlPath); // ✅ goes up from /controllers to /backend
+      await fs.unlink(localPath).catch(() => {});
 
       //delete document
      await document.deleteOne()
@@ -218,10 +218,12 @@ export const deleteDocument = async (req, res, next) => {
         success: true
       })
     }catch(error){
+      console.log(error.message)
  res.status(500).json({
         message:'Internal server error',
        error: error.message
       })
+
     }
 }
 

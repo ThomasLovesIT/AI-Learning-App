@@ -25,13 +25,14 @@ const getDocuments = async () => {
     const response = await axiosInstance.get(API_PATHS.DOCUMENTS.GET_DOCUMENTS)
     return response.data
     }catch(err){
+        console.log(err.message)
         throw err.response?.data || {message: 'Failed to fetch all documents'}
     }
 }
 const uploadDocuments = async (formData) => {
     try {
     const response = await axiosInstance.post(API_PATHS.DOCUMENTS.UPLOAD, formData, {
-        header: {
+        headers: {
             'Content-Type': 'multipart/form-data'
         }
     })
