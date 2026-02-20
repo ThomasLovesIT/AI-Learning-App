@@ -212,6 +212,10 @@ try{
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-lite',
         contents: prompt,
+        generationConfig: {
+          temperature: 0.2,      // Lower = more factual, less creative
+          maxOutputTokens: 1024,
+        },
       });
       const generatedText = response.text;
       return generatedText

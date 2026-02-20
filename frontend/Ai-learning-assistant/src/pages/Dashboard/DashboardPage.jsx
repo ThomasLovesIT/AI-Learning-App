@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { BookOpen, BrainCircuit, FileText, TrendingUp } from "lucide-react";
-import Spinner from "../../components/Spinner";
+import Spinner from "../../components/common/Spinner.jsx";
 import progressService from "../../services/progressService.js";
 
 const StatCard = ({ label, value, icon: Icon, gradient }) => {
