@@ -120,16 +120,19 @@ export const toggleStartFlashcard = async (req, res, next) => {
     next(error)
   }
 }
-
 export const deleteFlashcardSet = async (req, res, next) => {
   try {
+    // FIX: Look for the Set's _id using req.params.id (NOT req.params.cardId)
+    // Also added userId so users can only delete their own sets!
     const flashcardSet = await Flashcard.findOne({
-      'cards._id': req.params.cardId,
+      _id: req.params.id,
+      userId: req.user._id 
     });
 
     if (!flashcardSet) {
       return res.status(400).json({
-        message: 'Flashcard does not exist'
+        success: false,
+        message: 'Flashcard set does not exist'
       })
     } 
 
@@ -137,7 +140,7 @@ export const deleteFlashcardSet = async (req, res, next) => {
 
     res.status(200).json({
       success: true, 
-      message: 'Flashcard deleted successfully'
+      message: 'Flashcard set deleted successfully'
     })
   } catch (error) {
     next(error)

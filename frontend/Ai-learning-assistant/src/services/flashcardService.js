@@ -55,9 +55,11 @@ const toggleFlashcardStar = async (cardId) => {
 const deleteFlashcardSet = async (id) => {
     try {
         const response = await axiosInstance.delete(API_PATHS.FLASHCARDS.DELETE_SET(id))
+
         return response.data
     
     } catch (err) {
+        console.log(err.message)
         throw err.response?.data || { message: 'Failed to delete flashcard set' }
     }
 }

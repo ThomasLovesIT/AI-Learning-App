@@ -8,6 +8,7 @@ import PageHeader from "../../components/common/PageHeader";
 import Tabs from "../../components/common/Tabs";
 import ChatInterface from "../../components/chat/ChatInterface";
 import GenerateSummaryAndExplainConcept from '../../components/AiActions/GenerateSummmaryAndExplainConcept';
+import FlashcardManager from '../../components/flashcards/FlashcardManager';
 
 
 const DocumentsDetailsPage = () => {
@@ -95,11 +96,7 @@ const DocumentsDetailsPage = () => {
   };
 
   const renderFlashcardTab = () => {
-    return (
-      <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-8 text-center text-gray-500">
-        Flashcards list coming soon
-      </div>
-    );
+    return <FlashcardManager documentId={id}/>
   };
 
   const renderQuizTab = () => {
