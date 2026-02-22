@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 
 const Flashcard = ({ flashcard, onToggleStar }) => {
@@ -9,6 +9,9 @@ const Flashcard = ({ flashcard, onToggleStar }) => {
   const backText = flashcard.back || flashcard.answer || 'No answer provided';
   const isStarred = flashcard.isStarred || false;
 
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [flashcard._id]); 
   return (
     <div 
       className="group h-[350px] w-full max-w-2xl mx-auto cursor-pointer perspective-1000"

@@ -137,11 +137,14 @@ try{
          statusCode: 400
       })
    }
+
    const document = await Document.findOne({
       _id: documentId,
       userId: req.user._id,
       status:'ready'
    })
+
+   
    const summary = await geminiService.generateSummary(
       document.extractedText
    )
@@ -155,96 +158,97 @@ try{
    })
       
 }catch(error){
-   next(error)
-   res.status(500).json({message: 'Internal server error'})
+   res.status(500).json({message: 'Internal server error', error: error.message})
 }
  }
+
+
  export const chat = async (req, res, next) => {
- try{
-      const { documentId, question } = req.body
-      if(!documentId || !question ){
-         return res.status(400).json({
-            success: false,
-            message: 'Please add a document Id and a prompt',
-            statusCode: 400
-         })
-      }
-
-   const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: 'ready'
-   })
-
-   if(!document){
-      return res.status(400).json({
-         success: false,
-         message: 'Document not found',
-         statusCode: 400
+   try{
+        const { documentId, question } = req.body
+        if(!documentId || !question ){
+           return res.status(400).json({
+              success: false,
+              message: 'Please add a document Id and a prompt',
+              statusCode: 400
+           })
+        }
+  
+     const document = await Document.findOne({
+        _id: documentId,
+        userId: req.user._id,
+        status: 'ready'
+     })
+  
+     if(!document){
+        return res.status(400).json({
+           success: false,
+           message: 'Document not found',
+           statusCode: 400
+        })
+     }
+     
+      //find relavant chunks
+      const relevantChunks = findRelevantChunks(document.chunks, question, 3);
+      const chunkIndices = relevantChunks.map(c => c.chunkIndex);
+  
+      let chatHistory = await ChatHistory.findOne({
+        userId: req.user._id,
+        documentId: document._id,
       })
-   }
-   
-    //find relavant chunks
-    const relevantChunks = findRelevantChunks(document.chunks, question, 3);
-    const chunkIndices = relevantChunks.map(c => c.chunkIndex);
-
-    let chatHistory = await ChatHistory.findOne({
-      userId: req.user._id,
-      documentId: document._id,
-    })
-
-   // create the chat history if not exist yet
-    if(!chatHistory) {
-      chatHistory = await ChatHistory.create({
-              userId: req.user._id,
-              documentId: document._id,
-                messages: []
-      })
-    }
-    // gemini answer generated
-    const answer = await geminiService.chatWithContext(
-      question,
-      relevantChunks
-    )
-
-    //store the messages inside the chat history
-    chatHistory.messages.push(
-      {
-         role: 'user',
-         content: question,
-         timestamp: new Date(),
-         relevantChunks: []
-      },
-      {
-          role: 'assistant',
-         content: answer,
-         timestamp: new Date(),
-         relevantChunks: chunkIndices
+  
+     // create the chat history if not exist yet
+      if(!chatHistory) {
+        chatHistory = await ChatHistory.create({
+                userId: req.user._id,
+                documentId: document._id,
+                  messages: []
+        })
       }
-    )
-
-    //Save the changes
-    await chatHistory.save()
-
-
-     res.status(201).json({
-      success:true,
-      data:{
-         documentId,
-         title: document.title,
+      // gemini answer generated
+      const answer = await geminiService.chatWithContext(
         question,
-        answer,
-        relevantchunks: relevantChunks,
-        chatHistoryId: chatHistory._id
-      },
-      message: 'response generated successfully'
-   })
+        relevantChunks
+      )
+  
+      //store the messages inside the chat history
+      chatHistory.messages.push(
+        {
+           role: 'user',
+           content: question,
+           timestamp: new Date(),
+           relevantChunks: []
+        },
+        {
+            role: 'assistant',
+           content: answer,
+           timestamp: new Date(),
+           relevantChunks: chunkIndices
+        }
+      )
+  
+      //Save the changes
+      await chatHistory.save()
+  
+  
+       res.status(201).json({
+        success:true,
+        data:{
+           documentId,
+           title: document.title,
+          question,
+          answer,
+          relevantchunks: relevantChunks,
+          chatHistoryId: chatHistory._id
+        },
+        message: 'response generated successfully'
+     })
+  
+      }catch (error) {
+         next
+         }
+      }
 
-    }catch(error){
-        next(error)
-        res.status(500).json( error.message)
-    }
- }
  export const explainConcept = async (req, res, next) => {
  try{
       const {documentId, concept} = req.body          

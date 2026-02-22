@@ -46,30 +46,35 @@ ${text.substring(0, 15000)}`;
     const flashcards = [];
     const cards = generatedText.split('---').filter(c => c.trim());
 
-    for (const card of cards) {
-      const lines = card.trim().split('\n');
+   // Upgraded parsing loop for geminiService.js
+for (const card of cards) {
+  const lines = card.trim().split('\n');
 
-      let question = '';
-      let answer = '';
-      let difficulty = 'medium';
+  let question = '';
+  let answer = '';
+  let difficulty = 'medium';
 
-      for (const line of lines) {
-        if (line.startsWith('Q:')) {
-          question = line.substring(2).trim();
-        } else if (line.startsWith('A:')) {
-          answer = line.substring(2).trim();
-        } else if (line.startsWith('D:')) {
-          const diff = line.substring(2).trim().toLowerCase();
-          if (['easy', 'medium', 'hard'].includes(diff)) {
-            difficulty = diff;
-          }
-        }
-      }
+  for (let line of lines) {
+    // Clean the line of any markdown bolding like **Q:** or **A:**
+    line = line.replace(/\*\*/g, '').trim();
 
-      if (question && answer) {
-        flashcards.push({ question, answer, difficulty });
+    if (line.startsWith('Q:')) {
+      question = line.substring(2).trim();
+    } else if (line.startsWith('A:')) {
+      answer = line.substring(2).trim();
+    } else if (line.startsWith('D:')) {
+      const diff = line.substring(2).trim().toLowerCase();
+      if (['easy', 'medium', 'hard'].includes(diff)) {
+        difficulty = diff;
       }
     }
+  }
+
+  // Only push if BOTH question and answer were successfully found
+  if (question && answer) {
+    flashcards.push({ question, answer, difficulty });
+  }
+}
 
     return flashcards;
 

@@ -8,9 +8,6 @@ import aiService from "../../services/aiService";
 import Spinner from "../common/Spinner";
 import Flashcard from "./Flashcard";
 
-// Note: If you have a custom Modal component, you can wrap the delete confirmation in it.
-// For simplicity and immediate functionality without breaking, I've used standard UI rendering.
-
 const FlashcardManager = ({ documentId }) => {
   const [flashcardSets, setFlashcardSets] = useState([]);
   const [selectedSet, setSelectedSet] = useState(null);
@@ -28,9 +25,7 @@ const FlashcardManager = ({ documentId }) => {
     if (!documentId) return;
     setLoading(true);
     try {
-      // FIX: Changed from aiService.generateFlashcards to flashcardService.getFlashcardsByDocument
       const response = await flashcardService.getFlashcardsByDocument(documentId);
-      // Fallback to empty array if data isn't directly the array
       setFlashcardSets(response.data || response || []);
     } catch (error) {
       console.error(error);
@@ -48,7 +43,7 @@ const FlashcardManager = ({ documentId }) => {
   const handleGenerateFlashcards = async () => {
     setGenerating(true);
     try {
-      await aiService.generateFlashcards(documentId, { quantity: 10 }); // passing options if supported
+      await aiService.generateFlashcards(documentId, { quantity: 10 }); 
       toast.success('Flashcards generated successfully!');
       fetchFlashcardSets(); // Re-fetch list to include the newly generated set
     } catch (error) {
@@ -88,7 +83,6 @@ const FlashcardManager = ({ documentId }) => {
       await flashcardService.reviewFlashcard(currentCard._id, index);
     } catch (error) {
       console.warn('Failed to sync review status:', error.message);
-      // Note: intentionally not showing error toast here so it doesn't interrupt studying
     }
   };
 
@@ -110,7 +104,7 @@ const FlashcardManager = ({ documentId }) => {
 
   // Delete Flow
   const handleDeleteRequest = (e, set) => {
-    e.stopPropagation(); // FIX: Typo corrected
+    e.stopPropagation(); 
     setSetToDelete(set);
     setIsDeleteModalOpen(true);
   };
@@ -163,7 +157,8 @@ const FlashcardManager = ({ documentId }) => {
           
           <div className="flex flex-col items-end">
              <span className="text-sm font-semibold text-gray-800">
-                {selectedSet.title || "Study Set"}
+                {/* FIX: Use populated document title */}
+                {selectedSet.documentId?.title || "Study Set"}
              </span>
              <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200 mt-1 shadow-sm">
                Card {currentCardIndex + 1} of {totalCards}
@@ -221,7 +216,10 @@ const FlashcardManager = ({ documentId }) => {
     return renderFlashcardViewer();
   }
 
-  return (
+ // At the very bottom of your component, replace the current return with:
+
+return (
+  <>
     <div className="flex flex-col gap-6 h-full max-h-[750px] overflow-y-auto custom-scrollbar pb-6 px-1">
       
       {/* HEADER SECTION */}
@@ -240,7 +238,7 @@ const FlashcardManager = ({ documentId }) => {
           <button
             onClick={handleGenerateFlashcards}
             disabled={generating}
-            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white text-xs md:text-sm font-medium rounded-xl hover:bg-blue-700 disabled:opacity-70 transition-colors shadow-sm shrink-0"
+            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white text-xs md:text-sm font-medium rounded-xl hover:bg-blue-700 disabled:opacity-70 transition-colors shadow-sm shrink-0 w-auto"
           >
             {generating ? <Spinner size="sm" color="white" /> : <Sparkles size={16} />}
             <span className="hidden md:inline">{generating ? 'Generating...' : 'Generate New Flashcards'}</span>
@@ -258,16 +256,16 @@ const FlashcardManager = ({ documentId }) => {
             Generate your first set of AI flashcards to start memorizing key concepts from this document.
           </p>
           <button
-             onClick={handleGenerateFlashcards}
-             className="text-blue-600 font-medium bg-blue-50 px-6 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+            onClick={handleGenerateFlashcards}
+            className="text-blue-600 font-medium bg-blue-50 px-6 py-2 rounded-lg hover:bg-blue-100 transition-colors"
           >
-             Generate Now
+            Generate Now
           </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {flashcardSets.map((set) => (
-            <div 
+            <div
               key={set._id}
               onClick={() => handleSelectSet(set)}
               className="bg-white border border-gray-100 rounded-xl p-5 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer flex flex-col group"
@@ -275,14 +273,13 @@ const FlashcardManager = ({ documentId }) => {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                    {set.title || "AI Generated Study Set"}
+                    {set.documentId?.title || "AI Generated Study Set"}
                   </h4>
                   <p className="text-xs text-gray-400 mt-1">
                     {moment(set.createdAt).format('MMMM Do YYYY')}
                   </p>
                 </div>
-                
-                <button 
+                <button
                   onClick={(e) => handleDeleteRequest(e, set)}
                   className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
@@ -295,7 +292,6 @@ const FlashcardManager = ({ documentId }) => {
                   <Layers size={14} className="text-gray-400" />
                   {set.cards?.length || 0} Cards
                 </div>
-                
                 <span className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                   Study Now <ChevronRight size={14} />
                 </span>
@@ -304,38 +300,38 @@ const FlashcardManager = ({ documentId }) => {
           ))}
         </div>
       )}
+    </div>
 
-      {/* Basic Delete Confirmation Modal Logic */}
-      {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-fade-in-up">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Flashcard Set?</h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Are you sure you want to delete this set? This action cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setIsDeleteModalOpen(false)}
-                disabled={deleting}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmDelete}
-                disabled={deleting}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 disabled:opacity-70 transition-colors flex items-center gap-2"
-              >
-                {deleting && <Spinner size="sm" />}
-                Delete
-              </button>
-            </div>
+    {/* ✅ DELETE MODAL — outside the scrollable div so it renders correctly */}
+    {isDeleteModalOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Flashcard Set?</h3>
+          <p className="text-gray-500 text-sm mb-6">
+            Are you sure you want to delete this set? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={deleting}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              disabled={deleting}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 disabled:opacity-70 transition-colors flex items-center gap-2"
+            >
+              {deleting && <Spinner size="sm" />}
+              Delete
+            </button>
           </div>
         </div>
-      )}
-
-    </div>
-  );
+      </div>
+    )}
+  </>
+);
 };
 
 export default FlashcardManager;
