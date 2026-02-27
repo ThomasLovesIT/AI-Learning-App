@@ -19,25 +19,28 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus()
   }, [])
 
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = () => {
     try {
       const token = localStorage.getItem('token')
       const userStr = localStorage.getItem('user')
+
+      if (!token) {
+        logout(false) // don't redirect yet during initial load
+        return
+      }
 
       if (token && userStr) {
         const userData = JSON.parse(userStr)
         setUser(userData)
         setIsAuthenticated(true)
       } else {
-        setUser(null)
-        setIsAuthenticated(false)
+        logout(false)
       }
     } catch (err) {
-    console.error('Auth check failed:', err.message)
-      logout()
- 
+      console.error('Auth check failed:', err.message)
+      logout(false)
     } finally {
-        setLoading(false)
+      setLoading(false)
     }
   }
 
@@ -49,17 +52,20 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true)
   }
 
-  const logout = () => {
+  const logout = (redirect = true) => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
 
     setUser(null)
     setIsAuthenticated(false)
-    window.location.href = '/'
+
+    if (redirect) {
+      window.location.href = '/login'
+    }
   }
 
-  const updateUser = (updateUserData) => {
-    const newUserData = {...user, ...updateUserData}
+  const updateUser = (updatedUserData) => {
+    const newUserData = { ...user, ...updatedUserData }
     localStorage.setItem('user', JSON.stringify(newUserData))
     setUser(newUserData)
   }

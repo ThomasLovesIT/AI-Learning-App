@@ -9,6 +9,7 @@ import Tabs from "../../components/common/Tabs";
 import ChatInterface from "../../components/chat/ChatInterface";
 import GenerateSummaryAndExplainConcept from '../../components/AiActions/GenerateSummmaryAndExplainConcept';
 import FlashcardManager from '../../components/flashcards/FlashcardManager';
+import QuizManager from '../../components/quizzes/QuizManager';
 
 
 const DocumentsDetailsPage = () => {
@@ -100,12 +101,9 @@ const DocumentsDetailsPage = () => {
   };
 
   const renderQuizTab = () => {
-    return (
-      <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-8 text-center text-gray-500">
-        Quiz list coming soon
-      </div>
-    );
+    return <QuizManager documentId={id}/>
   };
+
 
   const tabs = [
     { name: "Content", label: "Content", content: renderContent() },
@@ -147,6 +145,6 @@ const DocumentsDetailsPage = () => {
       <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
-};
+}
 
 export default DocumentsDetailsPage;

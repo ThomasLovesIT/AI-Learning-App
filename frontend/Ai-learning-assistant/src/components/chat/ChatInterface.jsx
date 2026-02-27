@@ -68,12 +68,26 @@ const ChatInterface = () => {
       
       setHistory((prev) => [...prev, assistantMessage]);
     } catch (err) {
-      console.error('chat error', err.message);
+      console.error('chat error', err.message || err);
+      
+      // Default generic error message
+      let replyContent = 'Sorry, I encountered an error. Please try again later.';
+
+      // Check if the backend sent our 429 Token Limit error
+      if (
+        err.statusCode === 429 || 
+        err.status === 429 || 
+        (err.message && err.message.toLowerCase().includes('limit'))
+      ) {
+        replyContent = "⏳ **AI token limit reached.**\n\nI need a quick breather! Google's free AI tier only allows a certain number of questions per minute. Please wait about **60 seconds** and try asking me again.";
+      }
+
       const errorMessage = {
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again later.',
+        content: replyContent,
         timestamp: new Date(),
       };
+      
       setHistory((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);

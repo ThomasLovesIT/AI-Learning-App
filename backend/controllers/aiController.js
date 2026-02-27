@@ -173,7 +173,7 @@ try{
               statusCode: 400
            })
         }
-  
+
      const document = await Document.findOne({
         _id: documentId,
         userId: req.user._id,
@@ -183,7 +183,7 @@ try{
      if(!document){
         return res.status(400).json({
            success: false,
-           message: 'Document not found',
+           message: 'Document not found ',
            statusCode: 400
         })
      }
@@ -245,9 +245,27 @@ try{
      })
   
       }catch (error) {
-         next
+         console.error("Gemini API Error:", error.message);
+
+         // CHECK FOR TOKEN/QUOTA LIMITS
+         // Google usually throws 429 or mentions "quota" or "exhausted" in the message
+         if (
+             error.status === 429 || 
+             error.message.toLowerCase().includes('quota') || 
+             error.message.toLowerCase().includes('token') ||
+             error.message.toLowerCase().includes('429')
+         ) {
+             return res.status(429).json({
+                 success: false,
+                 message: "AI token limit reached. Please wait a minute and try again. ⏳"
+             });
          }
-      }
+ 
+         // If it's a normal error, pass it on
+         next(error);
+     }
+         }
+      
 
  export const explainConcept = async (req, res, next) => {
  try{

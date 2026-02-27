@@ -153,7 +153,7 @@ import Quiz from '../models/Quiz.js'
  export const getQuizResults = async (req, res, next) => {
     try{
          const quiz = await Quiz.findOne({
-          _id: req.params._id,
+          _id: req.params.id,
           userId: req.user._id
          }).populate('documentId', 'title');
          if(!quiz){
@@ -207,7 +207,7 @@ import Quiz from '../models/Quiz.js'
     try{
       // fetch quiz id
       const quiz = await Quiz.findOne({
-        _id: req.params._id,
+        _id: req.params.id,
         userId: req.user._id
       });
 

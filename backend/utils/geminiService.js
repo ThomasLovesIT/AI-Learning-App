@@ -225,10 +225,16 @@ try{
       const generatedText = response.text;
       return generatedText
 
-  }catch(err){
-  console.error('Gemini API ERROR:', err);
-      throw new Error('Failed to generate flashcards');
-  }
+  }catch (err) {
+    console.error('Gemini API ERROR:', err);
+    
+    // Create an error, but ATTACH the Google status code to it!
+    const customError = new Error('AI request failed');
+    customError.status = err.status || 500; 
+    customError.originalMessage = err.message;
+    
+    throw customError; // Now the controller will see the 429!
+}
 }
 /**
  * Generate Explain concept from AI

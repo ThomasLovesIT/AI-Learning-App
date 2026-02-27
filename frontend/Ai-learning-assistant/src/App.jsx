@@ -7,7 +7,7 @@ import DocumentsDetailsPage from './pages/Documents/DocumentsDetailsPage'
 import FlashcardsListPage from './pages/Flashcards/FlashcardsListPage'
 import FlashcardsPage from './pages/Flashcards/FlashcardsPage'
 import QuizTakePage from './pages/Quizzes/QuizTakePage'
-import QuizResultPage from './pages/Quizzes/QuizResultPage'
+import QuizResultPage from './pages/Quizzes/QuizResultPage.jsx'
 import ProfilePage from './pages/Profile/ProfilePage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
@@ -21,15 +21,14 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated
-              ? <Navigate to="/dashboard" replace />
-              : <Navigate to="/login" replace />
-          }
-        />
-
+          <Route
+      path="/"
+      element={
+        isAuthenticated
+          ? <Navigate to="/dashboard" replace />
+          : <Navigate to="/login" replace />
+      }
+    />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
@@ -40,8 +39,8 @@ const App = () => {
           <Route path="/documents/:id" element={<DocumentsDetailsPage />} />
           <Route path="/flashcards" element={<FlashcardsListPage />} />
           <Route path="/documents/:id/flashcards" element={<FlashcardsPage />} />
-          <Route path="/quizzes/:quizzId" element={<QuizTakePage />} />
-          <Route path="/quizzes/:quizzId/results" element={<QuizResultPage />} />
+          <Route path="/quizzes/:quizId/take" element={<QuizTakePage />} />
+          <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 

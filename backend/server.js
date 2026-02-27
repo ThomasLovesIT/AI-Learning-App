@@ -46,7 +46,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/document', documentRoutes)
 app.use('/api/flashcard', flashcardRoutes)
 app.use('/api/ai', aiRoutes)
-app.use('/api/quiz', quizRoutes)
+app.use('/api/quizzes', quizRoutes)
 app.use('/api/progress', progressRoutes)
 
 // 404 Handler
